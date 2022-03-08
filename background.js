@@ -53,14 +53,18 @@ chrome.storage.onChanged.addListener(function (changes, areaName) {
   }
 })
 
-// 弹出chrome通知
+// 弹出browser通知
 function showNotification (id, opt) {
-  chrome.notifications.create(id, opt, function (notifyId) {
+  getConfig('isEnableNotice').then(({ isEnableNotice }) => {
+    if (isEnableNotice) {
+      browser.notifications.create(id, opt, function (notifyId) {
     return notifyId
   })
   setTimeout(function () {
-    chrome.notifications.clear(id, function () {})
+        browser.notifications.clear(id, function () {})
   }, 3000)
+}
+  })
 }
 
 function requestAuth (url) {

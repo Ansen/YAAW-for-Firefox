@@ -43,6 +43,15 @@
               </div>
             </div>
             <div class="control-group">
+              <label class="control-label" for="enableNotice">{{ enableNotice }}</label>
+              <div class="controls">
+                <label class="checkbox">
+                  <input type="checkbox" id="enableNotice" v-model="isEnableNotice">
+                  {{ enableNoticeDesc }}
+                </label>
+              </div>
+            </div>
+            <div class="control-group">
               <label class="control-label" for="syncConfig">{{ syncConfig }}</label>
               <div class="controls">
                 <label class="checkbox">

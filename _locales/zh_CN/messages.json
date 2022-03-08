@@ -91,5 +91,11 @@
    },
    "resetConfirm": {
       "message": "真的要重置么？"
+   },
+   "enableNotice": {
+      "message": "开启通知"
+   },
+   "enableNoticeDesc": {
+      "message": "是否发送事件通知"
    }
 }

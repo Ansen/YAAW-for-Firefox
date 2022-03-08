@@ -91,5 +91,11 @@
    },
    "resetConfirm": {
       "message": "Confirm reset?"
+   },
+   "enableNotice": {
+      "message": "Enable notice"
+   },
+   "enableNoticeDesc": {
+      "message": "enable event notice"
    }
 }
