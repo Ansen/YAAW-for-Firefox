@@ -18,39 +18,39 @@ const vm = new Vue({
       whitelist: '',
       blocklist: '',
       saved: false,
-      version: chrome.runtime.getManifest().version,
-      title: chrome.i18n.getMessage('title'),
-      contextMenu: chrome.i18n.getMessage('contextMenu'),
-      contextMenuDesc: chrome.i18n.getMessage('contextMenuDesc'),
-      autoRename: chrome.i18n.getMessage('autoRename'),
-      autoRenameDesc: chrome.i18n.getMessage('autoRenameDesc'),
-      syncConfig: chrome.i18n.getMessage('syncConfig'),
-      syncConfigDesc: chrome.i18n.getMessage('syncConfigDesc'),
-      interception: chrome.i18n.getMessage('interception'),
-      interceptionDesc: chrome.i18n.getMessage('interceptionDesc'),
-      fileSizeStr: chrome.i18n.getMessage('fileSizeStr'),
-      unit: chrome.i18n.getMessage('unit'),
-      downloadPathStr: chrome.i18n.getMessage('downloadPathStr'),
-      downloadPathDesc: chrome.i18n.getMessage('downloadPathDesc'),
-      addRPC: chrome.i18n.getMessage('addRPC'),
-      removeRPC: chrome.i18n.getMessage('removeRPC'),
-      whitelistStr: chrome.i18n.getMessage('whitelistStr'),
-      blocklistStr: chrome.i18n.getMessage('blocklistStr'),
-      save: chrome.i18n.getMessage('save'),
-      saveSuccess: chrome.i18n.getMessage('saveSuccess'),
-      reset: chrome.i18n.getMessage('reset')
+      version: browser.runtime.getManifest().version,
+      title: browser.i18n.getMessage('title'),
+      contextMenu: browser.i18n.getMessage('contextMenu'),
+      contextMenuDesc: browser.i18n.getMessage('contextMenuDesc'),
+      autoRename: browser.i18n.getMessage('autoRename'),
+      autoRenameDesc: browser.i18n.getMessage('autoRenameDesc'),
+      syncConfig: browser.i18n.getMessage('syncConfig'),
+      syncConfigDesc: browser.i18n.getMessage('syncConfigDesc'),
+      interception: browser.i18n.getMessage('interception'),
+      interceptionDesc: browser.i18n.getMessage('interceptionDesc'),
+      fileSizeStr: browser.i18n.getMessage('fileSizeStr'),
+      unit: browser.i18n.getMessage('unit'),
+      downloadPathStr: browser.i18n.getMessage('downloadPathStr'),
+      downloadPathDesc: browser.i18n.getMessage('downloadPathDesc'),
+      addRPC: browser.i18n.getMessage('addRPC'),
+      removeRPC: browser.i18n.getMessage('removeRPC'),
+      whitelistStr: browser.i18n.getMessage('whitelistStr'),
+      blocklistStr: browser.i18n.getMessage('blocklistStr'),
+      save: browser.i18n.getMessage('save'),
+      saveSuccess: browser.i18n.getMessage('saveSuccess'),
+      reset: browser.i18n.getMessage('reset')
     }
   },
   mounted () {
-    chrome.storage.sync.get(null, (items) => {
+    browser.storage.sync.get(null, (items) => {
       for (const key in items) {
         this[key] = items[key]
-        chrome.storage.local.set({ key: items[key] }, () => {
-          console.log('chrome first local set: %s, %s', key, items[key])
+        browser.storage.local.set({ key: items[key] }, () => {
+          console.log('browser first local set: %s, %s', key, items[key])
         })
       }
     })
-    chrome.storage.local.get(null, (items) => {
+    browser.storage.local.get(null, (items) => {
       for (const key in items) {
         this[key] = items[key]
       }
@@ -79,22 +79,22 @@ const vm = new Vue({
         blocklist: this.blocklist
       }
       for (const key in configData) {
-        chrome.storage.local.set({ [key]: configData[key] }, () => {
-          console.log('chrome local set: %s, %s', key, configData[key])
+        browser.storage.local.set({ [key]: configData[key] }, () => {
+          console.log('browser local set: %s, %s', key, configData[key])
         })
         if (configData.isSync === true) {
-          chrome.storage.sync.set({ [key]: configData[key] }, () => {
-            console.log('chrome sync set: %s, %s', key, configData[key])
+          browser.storage.sync.set({ [key]: configData[key] }, () => {
+            console.log('browser sync set: %s, %s', key, configData[key])
           })
         }
       }
       this.showSavedInfo()
     },
     clear () {
-      const confirmMessage = chrome.i18n.getMessage('resetConfirm')
+      const confirmMessage = browser.i18n.getMessage('resetConfirm')
       if (window.confirm(confirmMessage)) {
-        chrome.storage.sync.clear()
-        chrome.storage.local.clear()
+        browser.storage.sync.clear()
+        browser.storage.local.clear()
         location.reload()
       }
     },
