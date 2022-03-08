@@ -16,12 +16,12 @@ const httpSend = ({ url, options }, resolve, reject) => {
 
 const getConfig = (key) => {
   return new Promise(function (resolve) {
-    chrome.storage.local.get(key, resolve)
+    browser.storage.local.get(key, resolve)
   })
 }
 // 生成右键菜单
 function addContextMenu (id, title) {
-  chrome.contextMenus.create({
+  browser.contextMenus.create({
     id: id,
     title: title,
     contexts: ['link']
@@ -29,7 +29,7 @@ function addContextMenu (id, title) {
 }
 
 function updateContextMenu () {
-  chrome.contextMenus.removeAll(() => {
+  browser.contextMenus.removeAll(() => {
     getConfig('isContextMenus').then(({ isContextMenus }) => {
       if (isContextMenus !== false) {
         getConfig('rpcLists').then(({ rpcLists }) => {
@@ -38,6 +38,8 @@ function updateContextMenu () {
               name: 'ARIA2 RPC',
               path: defaultRPC
             }]
+          } else {
+            rpcLists = JSON.parse(rpcLists)
           }
           rpcLists.forEach(rpcItem => {
             addContextMenu(rpcItem.path, rpcItem.name)
@@ -47,7 +49,7 @@ function updateContextMenu () {
     })
   })
 }
-chrome.storage.onChanged.addListener(function (changes, areaName) {
+browser.storage.onChanged.addListener(function (changes, areaName) {
   if (changes.rpcLists) {
     updateContextMenu()
   }
@@ -58,12 +60,12 @@ function showNotification (id, opt) {
   getConfig('isEnableNotice').then(({ isEnableNotice }) => {
     if (isEnableNotice) {
       browser.notifications.create(id, opt, function (notifyId) {
-    return notifyId
-  })
-  setTimeout(function () {
+        return notifyId
+      })
+      setTimeout(function () {
         browser.notifications.clear(id, function () {})
-  }, 3000)
-}
+      }, 3000)
+    }
   })
 }
 
@@ -115,7 +117,7 @@ function generateParameter (authStr, path, data) {
 }
 function aria2Send (rpcPath, fileDownloadInfo) {
   const { authStr, path, options } = parseURL(rpcPath)
-  chrome.cookies.getAll({ url: fileDownloadInfo.link }, function (cookies) {
+  browser.cookies.getAll({ url: fileDownloadInfo.link }, function (cookies) {
     const formatedCookies = []
     cookies.forEach(cookie => {
       formatedCookies.push(cookie.name + '=' + cookie.value)
@@ -153,8 +155,8 @@ function aria2Send (rpcPath, fileDownloadInfo) {
       httpSend(parameter, () => {
         const opt = {
           type: 'basic',
-          title: chrome.i18n.getMessage('startDownload'),
-          message: fileDownloadInfo.fileName ? fileDownloadInfo.fileName : chrome.i18n.getMessage('downloadSuccess'),
+          title: browser.i18n.getMessage('startDownload'),
+          message: fileDownloadInfo.fileName ? fileDownloadInfo.fileName : browser.i18n.getMessage('downloadSuccess'),
           iconUrl: fileDownloadInfo.icon ? fileDownloadInfo.icon : 'images/icon.jpg'
         }
         const id = new Date().getTime().toString()
@@ -163,8 +165,8 @@ function aria2Send (rpcPath, fileDownloadInfo) {
         console.log(error)
         const opt = {
           type: 'basic',
-          title: chrome.i18n.getMessage('downloadFailed'),
-          message: chrome.i18n.getMessage('downloadFailedDesc'),
+          title: browser.i18n.getMessage('downloadFailed'),
+          message: browser.i18n.getMessage('downloadFailedDesc'),
           iconUrl: 'images/icon.jpg'
         }
         const id = new Date().getTime().toString()
@@ -223,7 +225,7 @@ async function isCapture (downloadItem) {
   }
 }
 
-chrome.contextMenus.onClicked.addListener(function (info, tab) {
+browser.contextMenus.onClicked.addListener(function (info, tab) {
   aria2Send(info.menuItemId, {
     link: info.linkUrl
   })
@@ -234,9 +236,9 @@ function interceptionDownload (downloadItem) {
     if (isInterception) {
       isCapture(downloadItem).then(result => {
         if (result) {
-          chrome.downloads.getFileIcon(downloadItem.id, function (iconUrl) {
-            if (chrome.runtime.lastError) {
-              console.log(chrome.runtime.lastError.message)
+          browser.downloads.getFileIcon(downloadItem.id, function (iconUrl) {
+            if (browser.runtime.lastError) {
+              console.log(browser.runtime.lastError.message)
             }
             getConfig('rpcLists').then(({ rpcLists }) => {
               if (!rpcLists) {
@@ -250,8 +252,8 @@ function interceptionDownload (downloadItem) {
                 filename: decodeURIComponent(downloadItem.filename).split(/[/\\]/).pop(),
                 icon: iconUrl || 'images/icon.jpg'
               })
-              chrome.downloads.cancel(downloadItem.id, function () {})
-              chrome.downloads.erase({ id: downloadItem.id })
+              browser.downloads.cancel(downloadItem.id, function () {})
+              browser.downloads.erase({ id: downloadItem.id })
             })
           })
         }
@@ -262,38 +264,38 @@ function interceptionDownload (downloadItem) {
 
 getConfig('isAutoRename').then(({ isAutoRename }) => {
   if (isAutoRename !== false) {
-    chrome.downloads.onDeterminingFilename.addListener(interceptionDownload)
+    browser.downloads.onDeterminingFilename.addListener(interceptionDownload)
   } else {
-    chrome.downloads.onCreated.addListener(interceptionDownload)
+    browser.downloads.onCreated.addListener(interceptionDownload)
   }
 })
 
 function openYAAW () {
-  const index = chrome.extension.getURL('yaaw/index.html')
-  chrome.tabs.getAllInWindow(undefined, function (tabs) {
+  const index = browser.extension.getURL('yaaw/index.html')
+  browser.tabs.getAllInWindow(undefined, function (tabs) {
     tabs.forEach(tab => {
       if (tab.url && tab.url === index) {
-        chrome.tabs.update(tab.id, { selected: true })
+        browser.tabs.update(tab.id, { selected: true })
       }
     })
-    chrome.tabs.create({ url: index })
+    browser.tabs.create({ url: index })
   })
 }
-chrome.browserAction.onClicked.addListener(function () {
+browser.browserAction.onClicked.addListener(function () {
   openYAAW()
 })
 
-chrome.notifications.onClicked.addListener(function () {
+browser.notifications.onClicked.addListener(function () {
   openYAAW()
 })
 // 软件版本更新提示
-const manifest = chrome.runtime.getManifest()
+const manifest = browser.runtime.getManifest()
 const previousVersion = localStorage.getItem('version')
 if (previousVersion === '' || previousVersion !== manifest.version) {
   const opt = {
     type: 'basic',
-    title: chrome.i18n.getMessage('updated'),
-    message: chrome.i18n.getMessage('updatedDesc', manifest.version),
+    title: browser.i18n.getMessage('updated'),
+    message: browser.i18n.getMessage('updatedDesc', manifest.version),
     iconUrl: 'images/icon.jpg'
   }
   const id = new Date().getTime().toString()

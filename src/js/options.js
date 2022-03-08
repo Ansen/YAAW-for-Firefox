@@ -3,10 +3,11 @@ import Vue from 'vue/dist/vue.esm.js'
 Vue.config.productionTip = false
 
 const vm = new Vue({
-  data () {
+  data() {
     return {
       isContextMenus: true,
       isAutoRename: true,
+      isEnableNotice: true,
       isInterception: false,
       isSync: false,
       fileSize: 0,
@@ -24,6 +25,8 @@ const vm = new Vue({
       contextMenuDesc: browser.i18n.getMessage('contextMenuDesc'),
       autoRename: browser.i18n.getMessage('autoRename'),
       autoRenameDesc: browser.i18n.getMessage('autoRenameDesc'),
+      enableNotice: browser.i18n.getMessage('enableNotice'),
+      enableNoticeDesc: browser.i18n.getMessage('enableNoticeDesc'),
       syncConfig: browser.i18n.getMessage('syncConfig'),
       syncConfigDesc: browser.i18n.getMessage('syncConfigDesc'),
       interception: browser.i18n.getMessage('interception'),
@@ -41,7 +44,7 @@ const vm = new Vue({
       reset: browser.i18n.getMessage('reset')
     }
   },
-  mounted () {
+  mounted() {
     browser.storage.sync.get(null, (items) => {
       for (const key in items) {
         this[key] = items[key]
@@ -52,45 +55,48 @@ const vm = new Vue({
     })
     browser.storage.local.get(null, (items) => {
       for (const key in items) {
-        this[key] = items[key]
+        if (key === 'rpcLists') {
+          this[key] = JSON.parse(items[key])
+        } else {
+          this[key] = items[key]
+        }
       }
     })
   },
   methods: {
-    addRPCForm () {
+    addRPCForm() {
       this.rpcLists.push({
         name: '',
         path: ''
       })
     },
-    removeRPCByIndex (index) {
+    removeRPCByIndex(index) {
       this.rpcLists.splice(index, 1)
     },
-    saveConfig () {
+    saveConfig() {
       const configData = {
         isContextMenus: this.isContextMenus,
         isAutoRename: this.isAutoRename,
+        isEnableNotice: this.isEnableNotice,
         isInterception: this.isInterception,
         isSync: this.isSync,
         fileSize: this.fileSize,
         downloadPath: this.downloadPath,
-        rpcLists: this.rpcLists,
+        rpcLists: JSON.stringify(this.rpcLists),
         whitelist: this.whitelist,
         blocklist: this.blocklist
       }
-      for (const key in configData) {
-        browser.storage.local.set({ [key]: configData[key] }, () => {
-          console.log('browser local set: %s, %s', key, configData[key])
+      browser.storage.local.set({ ...configData }).then(() => {
+        console.log('browser local set:', configData)
+      })
+      if (configData.isSync === true) {
+        browser.storage.sync.set({ ...configData }).then(() => {
+          console.log('browser sync set: ', configData)
         })
-        if (configData.isSync === true) {
-          browser.storage.sync.set({ [key]: configData[key] }, () => {
-            console.log('browser sync set: %s, %s', key, configData[key])
-          })
-        }
       }
       this.showSavedInfo()
     },
-    clear () {
+    clear() {
       const confirmMessage = browser.i18n.getMessage('resetConfirm')
       if (window.confirm(confirmMessage)) {
         browser.storage.sync.clear()
@@ -98,7 +104,7 @@ const vm = new Vue({
         location.reload()
       }
     },
-    showSavedInfo () {
+    showSavedInfo() {
       this.saved = true
       setTimeout(() => {
         this.saved = false
