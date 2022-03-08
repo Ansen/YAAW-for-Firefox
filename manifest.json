@@ -6,9 +6,9 @@
   "homepage_url": "https://github.com/Ansen/YAAW-for-Firefox",
   "default_locale": "en",
   "icons": {
-    "32": "src/images/logo32.png",
-    "64": "src/images/logo64.png",
-    "128": "src/images/logo128.png"
+    "32": "images/logo32.png",
+    "64": "images/logo64.png",
+    "128": "images/logo128.png"
   },
   "permissions": [
     "storage",
@@ -28,10 +28,10 @@
     ]
   },
   "browser_action": {
-    "default_icon": "src/images/logo32.png"
+    "default_icon": "images/logo32.png"
   },
   "options_ui": {
-    "page": "src/options.html",
+    "page": "options.html",
     "open_in_tab": true
   }
 }
