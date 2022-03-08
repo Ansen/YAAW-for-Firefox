@@ -1,30 +1,37 @@
 {
-  "background": {
-    "scripts": ["background.js"],
-    "persistent": false
-  },
-  "default_locale": "en",
-  "description": "__MSG_description__",
-  "icons": {
-    "32": "images/logo32.png",
-    "64": "images/logo64.png",
-    "128": "images/logo128.png"
-  },
   "manifest_version": 2,
-  "browser_action": {
-    "default_icon": "images/logo32.png"
-  },
-  "options_page": "options.html",
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-  "permissions": [
-    "cookies",
-    "notifications",
-    "tabs",
-    "contextMenus",
-    "downloads",
-    "<all_urls>",
-    "storage"
-  ],
   "name": "__MSG_appName__",
-  "version": "0.2.3"
+  "version": "1.0",
+  "description": "__MSG_description__",
+  "homepage_url": "https://github.com/Ansen/YAAW-for-Firefox",
+  "default_locale": "en",
+  "icons": {
+    "32": "src/images/logo32.png",
+    "64": "src/images/logo64.png",
+    "128": "src/images/logo128.png"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "notifications",
+    "downloads",
+    "downloads.open",
+    "contextMenus",
+    "webRequest",
+    "webRequestBlocking",
+    "cookies",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "browser_action": {
+    "default_icon": "src/images/logo32.png"
+  },
+  "options_ui": {
+    "page": "src/options.html",
+    "open_in_tab": true
+  }
 }
