@@ -157,7 +157,7 @@ export function watch () {
 
 export function compress () {
   return gulp.src(paths.compress.src)
-    .pipe(zip('firefox.zip'))
+    .pipe(zip('firefox.xpi'))
     .pipe(gulp.dest(paths.compress.dest))
 }
 export const build = gulp.parallel(htmls, styles, scripts, images, copys)
